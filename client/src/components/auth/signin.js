@@ -7,7 +7,6 @@ import { signinUser } from '../../actions';
 class Signin extends Component {
   handleFormSubmit({ email, password }) {
     console.log(email, password);
-    console.log(this.props);
 
     this.props.signinUser({ email, password });
   }
