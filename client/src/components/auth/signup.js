@@ -14,10 +14,24 @@ const renderField = ({ input, label, type, meta: { touched, error } }) => (
 );
 
 class Signup extends Component {
-  render() {
+  handleFormSubmit(formProps) {
+    this.props.signupUser(formProps);
+  }
 
+  renderAlert() {
+    if (this.props.errorMessage) {
+      return (
+        <div className="alert alert-danger">
+          <strong>Oops!</strong> {this.props.errorMessage}
+        </div>
+      )
+    }
+  }
+
+  render() {
+    const { handleSubmit } = this.props;
     return (
-      <form>
+      <form onSubmit={ handleSubmit(this.handleFormSubmit.bind(this)) }>
           <Field
             name="email"
             label="Email"
@@ -37,7 +51,7 @@ class Signup extends Component {
             type="password"
             component={renderField}
             />
-
+            { this.renderAlert() }
         <button action="submit" className="btn btn-primary">Sign Up</button>
       </form>
     );
@@ -47,11 +61,27 @@ class Signup extends Component {
 function validate(formProps) {
   const errors = {};
 
+  if (!formProps.email) {
+    errors.email = "Please enter an email";
+  }
+
+  if (!formProps.password) {
+    errors.password = "Please enter a password";
+  }
+
+  if (!formProps.passwordConfirm) {
+    errors.passwordConfirm = "Please confirm password";
+  }
+
   if (formProps.password !== formProps.passwordConfirm) {
     errors.password = "Passwords must match";
   }
 
   return errors;
+}
+
+function mapStateToProps(state) {
+  return { errorMessage: state.auth.error };
 }
 
 
@@ -61,4 +91,4 @@ Signup = reduxForm({
   validate
 })(Signup);
 
-export default Signup = connect(null, actions)(Signup)
+export default Signup = connect(mapStateToProps, actions)(Signup)
