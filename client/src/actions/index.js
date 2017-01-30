@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { browserHistory } from 'react-router';
-import { AUTH_USER, AUTH_ERROR, UNAUTH_USER } from './types';
+import { AUTH_USER, AUTH_ERROR, UNAUTH_USER, SUCCESS_MESSAGE } from './types';
+
 
 const ROOT_URL = 'http://localhost:3090';
 
@@ -25,6 +26,13 @@ export function authError(error) {
   };
 }
 
+export function succesMessage(message) {
+  return {
+    type: SUCCESS_MESSAGE,
+    payload: message
+  };
+}
+
 export function signoutUser() {
   localStorage.removeItem('token');
 
@@ -42,5 +50,14 @@ export function signupUser({ email, password }) {
         .catch(error => {
           dispatch(authError(error.response.data.error));
         });
+  }
+}
+
+export function fetchMessage(token) {
+  return function(dispatch) {
+    axios.get(ROOT_URL, { headers: { 'Authorization': token } } )
+      .then(response => {
+        dispatch(succesMessage(response.data.message));
+      });
   }
 }
